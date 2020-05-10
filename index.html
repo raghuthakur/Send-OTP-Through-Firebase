@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Send OTP Through Firebase</title>
+    <link rel="stylesheet" href="build/css/intlTelInput.css">
+    <link rel="stylesheet" href="build/css/demo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="build/js/intlTelInput.js"></script>
+    <script src="build/js/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+</head>
+
+<body>
+    <div class="enter-mobile">
+        <h1>SEND OTP</h1>
+        <form id="target">
+            <input id="phone" name="phone" type="tel" maxlength="16">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div class="mobile-verification">
+        <form>
+            <input type="text" id="verificationcode" placeholder="enter otp">
+            <input class="button" type="button" maxlength="6" minlength="6" value="Submit" onclick="verificationFunction()">
+        </form>
+    </div>
+    <div id="recaptcha-container"></div>
+</body>
+
+</html>
+
+
+<script>
+    $(document).ready(function() {
+        $('.mobile-verification').hide();
+    });
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+        measurementId: ""
+    };
+    firebase.initializeApp(config);
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+    var input = document.querySelector("#phone");
+    window.intlTelInput(input, {
+        utilsScript: "build/js/utils.js",
+    });
+    var iti = intlTelInput(input);
+    $("#target").submit(function(event) {
+        var isValid = iti.isValidNumber();
+        if (isValid == false) {
+            toastr.error('Please enter valid number.');
+            return false;
+        } else {
+            var number = iti.getNumber();
+            firebase.auth().signInWithPhoneNumber(number, window.recaptchaVerifier)
+                .then(function(confirmationResult) {
+                    window.confirmationResult = confirmationResult;
+                    $('.enter-mobile').hide();
+                    $('.mobile-verification').show();
+                });
+        }
+        event.preventDefault();
+    });
+    var verificationFunction = function() {
+        window.confirmationResult.confirm(document.getElementById("verificationcode").value)
+            .then(function(result) {
+                toastr.success('Success');
+                window.location.href = "https://app.sterkla.com/sterkladev/login";
+            }, function(error) {
+                toastr.error(error);
+            });
+    };
+</script>
