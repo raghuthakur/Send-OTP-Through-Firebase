@@ -17,7 +17,7 @@ Enter a name and click “Register App”
 
 Copy the firebaseConfig object as well as the firebase.initializeApp . We will use these later.
 
-4. Enable Phone Authentication
+3. Enable Phone Authentication
 Click on “Authentication” on the sidebar
 
 Click on “Sign In Method”
