@@ -11,33 +11,30 @@
     <script src="build/js/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
-
-    <style>
-        #verificationcode {
-            padding-left: 15px;
-            letter-spacing: 42px;
-            border: 0;
-            background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
-            background-position: bottom;
-            background-size: 50px 1px;
-            background-repeat: repeat-x;
-            background-position-x: 35px;
-            width: 330px;
-        }
-        
-        #divInner {
-            left: 0;
-            position: sticky;
-        }
-        
-        #divOuter {
-            width: 285px;
-            overflow: hidden;
-        }
-    </style>
-
-
 </head>
+<style>
+    #verificationcode {
+        padding-left: 15px;
+        letter-spacing: 42px;
+        border: 0;
+        background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
+        background-position: bottom;
+        background-size: 50px 1px;
+        background-repeat: repeat-x;
+        background-position-x: 35px;
+        width: 330px;
+    }
+    
+    #divInner {
+        left: 0;
+        position: sticky;
+    }
+    
+    #divOuter {
+        width: 285px;
+        overflow: hidden;
+    }
+</style>
 
 <body>
     <div class="enter-mobile">
@@ -46,30 +43,29 @@
             <input id="phone" name="phone" type="tel">
             <button type="submit">Submit</button>
         </form>
+
+        <br><br>
+
+        <div id="recaptcha-container"></div>
     </div>
-    <div class="mobile-verification">
+    <div class="mobile-verification" style="display: none;">
+        <h1>Enter OTP</h1>
         <form>
             <div id="divOuter">
                 <div id="divInner">
                     <input type="text" id="verificationcode" maxlength="6" onKeyPress="if(this.value.length==6) return false;">
                 </div>
             </div>
-            <br>
-            <br>
-            <input class="button" type="button" value="Submit" onclick="verificationFunction()">
         </form>
     </div>
-    <div id="recaptcha-container"></div>
+
+
 </body>
 
 </html>
 
 
 <script>
-    $(document).ready(function() {
-        $('.mobile-verification').hide();
-    });
-
     // Initialize Firebase
     var config = {
         apiKey: "",
@@ -100,18 +96,27 @@
                     window.confirmationResult = confirmationResult;
                     $('.enter-mobile').hide();
                     $('.mobile-verification').show();
+                    $('#verificationcode').val('');
                 });
         }
         event.preventDefault();
     });
+
+    $('#verificationcode').keyup(function() {
+        if (this.value.length == 6) {
+            verificationFunction();
+        }
+    });
+
     var verificationFunction = function() {
         window.confirmationResult.confirm(document.getElementById("verificationcode").value)
             .then(function(result) {
                 toastr.success('Success');
                 window.location.href = "https://app.sterkla.com/sterkladev/login";
             }, function(error) {
-                toastr.error(error);
+                console.log(error);
+
+                toastr.error('Invalid OTP');
             });
     };
-</script>
 </script>
