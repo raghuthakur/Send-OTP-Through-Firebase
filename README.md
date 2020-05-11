@@ -8,6 +8,7 @@ Enter a project name, check the terms agreement checkbox
 Click “Create Project”
 
 Create a Firebase Project
+
 2. Create a Firebase App
 Click on the gear icon beside Project Overview and choose “Project Settings”
 
